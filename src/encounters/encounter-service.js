@@ -1,6 +1,6 @@
 const EncountersService = {
-    getAllEncounters(knex) {
-        return knex.select('*').from('encounters')
+    getUserEncounter(knex, users) {
+        return knex.select({ users }).from('encounters')
     },
     createNewEncounter(knex, newEncounter) {
         return knex
@@ -12,6 +12,11 @@ const EncountersService = {
         return('encounters')
         .where({ id })
         .delete()
+    },
+    updateEncounter(knex, id, newEncounterMonster) {
+        return knex('encounters')
+        .where( { id })
+        .update(newEncounterMonster)
     }
 }
 
