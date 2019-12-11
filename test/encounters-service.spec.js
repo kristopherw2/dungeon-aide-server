@@ -1,4 +1,4 @@
-const EncountersService = require('../src/encounters/encounter-service')
+const EncountersService = require('../src/encounters/encounters-service')
 const knex = require('knex')
     let db
     let testEncounters = [
@@ -40,7 +40,7 @@ const knex = require('knex')
 
 describe(`Encounters service object`, function() {
     it(`resolves all encounters from the 'encounters' table`, () => {
-        return EncountersService.getAllEncounters(db)
+        return EncountersService.get(db)
         .then(actual => {
             expect(actual).to.eql(testEncounters)
         })

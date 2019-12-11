@@ -1,6 +1,9 @@
 const EncountersService = {
-    getUserEncounter(knex, users) {
-        return knex.select({ users }).from('encounters')
+    getAllEncounters(knex) {
+        return knex.select('*').from('encounters')
+    },
+    getEncountersByUser(knex, users) {
+        return knex.from('encounters').select('*').where('users', users)
     },
     createNewEncounter(knex, newEncounter) {
         return knex

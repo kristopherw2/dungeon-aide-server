@@ -5,7 +5,7 @@ const UsersService = {
         .first()
     },
     comparePasswords(password) {
-        
+        return password.compare(password)
     }
 
 }
