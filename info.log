@@ -1,0 +1,18 @@
+{"message":"Encounter with id 2 not found.","level":"error"}
+{"message":"Monster with id 2 not found.","level":"error"}
+{"message":"Name is required","level":"error"}
+{"message":"Name is required","level":"error"}
+{"message":"Encounter with id 94151ccb-5670-4e31-9f2d-b68a908357ce created","level":"info"}
+{"message":"Name is required","level":"error"}
+{"message":"Name is required","level":"error"}
+{"message":"Name is required","level":"error"}
+{"message":"Encounter with id 72807fa6-ca39-493e-a4a3-faca53ffd037 created","level":"info"}
+{"message":"User is not a number","level":"error"}
+{"message":"user is not a number","level":"error"}
+{"message":"Encounter with id fe824d66-f35d-4ebe-801e-c75e0577ca27 created","level":"info"}
+{"message":"Encounter with id 71040f6c-a7af-4fc9-a816-3be42629b1c1 created","level":"info"}
+{"message":"Encounter with id 71040f6c-a7af-4fc9-a816-3be42629b1c1 not found.","level":"error"}
+{"message":"Monster with id 4a09efd9-9be8-4eb3-a531-8990964b3c83 added to encounter with id 2ccbd1db-385f-46ed-a3f8-643fe7186b42","level":"info"}
+{"message":"Monster with id 671fd8f2-20f8-488e-bd51-6262fbe27849 added to encounter with id 7f1cf20d-ee2f-49dc-b3bc-376cece7816d","level":"info"}
+{"message":"Monster with id bf40efb6-e1b6-44a2-b992-4a361d56265e added to encounter with id 5e5d11a3-6ca6-4838-b225-c2e44b76fdea","level":"info"}
+{"message":"Status Effects are required","level":"error"}
