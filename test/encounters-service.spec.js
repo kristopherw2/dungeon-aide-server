@@ -26,15 +26,15 @@ const knex = require('knex')
         })
     });
 
-    before(() => db.schema.table('encounters', function(t) {
-        t.dropForeign('users', 'encounters_fk');
-    }));
+    // before(() => db.schema.table('encounters', function(t) {
+    //     t.dropForeign('users', 'encounters_users_fkey');
+    // }));
 
     // before(() => db('encounters').truncate())
 
-    // before(() => {
-    //     return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
-    // });
+    before(() => {
+        return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
+    });
 
     before(() => {
         return db
@@ -42,9 +42,9 @@ const knex = require('knex')
         .insert(testEncounters)
     });
 
-    afterEach(() => db.schema.table('encounters', function(t) {
-        t.foreign('users').references('id').inTable('users').withKeyName('encounters_fk')
-    }));
+    // afterEach(() => db.schema.table('encounters', function(t) {
+    //     t.foreign('users').references('id').inTable('users').withKeyName('encounters_users_fkey')
+    // }));
 
     after(() => db.destroy());
 
