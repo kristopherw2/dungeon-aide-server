@@ -1,48 +1,89 @@
 const path = require('path')
 const express = require('express')
+const uuid = require('uuid/v4')
+const logger = require('../logger')
+const { encounters, monsters } = require('../store')
 const EncountersService = require('./encounters-service')
 
 const encountersRouter = express.Router()
-const jsonParser = express.json()
-
-const serializeEncounter = encounter => ({
-    id: encounter.id,
-    name: encounter.name,
-    users: encounter.users
-})
+const bodyParser = express.json()
 
 encountersRouter
-    .route('/')
-    .get((req, res, next) => {
-        const knexInstance = req.app.get('db')
-        EncountersService.getUserEncounter(knexInstance)
-        .then(encounters => {
-            res.json(encounters.map(serializeEncounter))
-        })
-        .catch(next)
+    .route('/encounters')
+    .get((req, res) => {
+        res.json(encounters);
     })
-    .post(jsonParser, (req, res, next) => {
-        const { name } = req.body
-        const newEncounter= {
-            name
-        }
+    .post(bodyParser, (req, res) => {
+        const { name, user } = req.body
+        
+        if(!name) {
+            logger.error(`Name is required`);
+            return res
+              .status(400)
+              .send('Invalid data');
+        };
+        
+        if(!user) {
+            logger.error(`user is required`);
+            return res
+            .status(404)
+            .send('Invalid Data')
+        };
+        
+        if(typeof user !== "number") {
+            logger.error(`user is not a number`)
+            return res
+            .status(400)
+            .send('user must be a number')
+        };
+        
+        const id = uuid();
+        
+        const newEncounter = {
+            id,
+            name,
+            user
+        };
+        
+        encounters.push(newEncounter)
+        
+        logger.info(`Encounter with id ${id} created`);
+        res
+            .status(201)
+            .location(`http://localhost:8000/encounters/${id}`)
+            .json(newEncounter)
+        });
 
-        for (const [key, value] of Object.entries(newEncounter))
-            if (value === null)
-                return res.status(400).json({
-                    error: {
-                        message: `Missing '${key} in request body`
-                    }
-                })
-        EncountersService.createNewEncounter(
-            req.app.get('db'),
-            newEncounter
-        )
-        .then(encounter => {
-            res
-                .status(201)
-                .location(path.posix.join(req.originalUrl, `/${encounter.id}`))
-                .json(serializeEncounter(encounter))
+encountersRouter
+        .route('/encounters/:id')
+        .get((req, res) => {
+            const { id } = req.params;
+            const encounter = encounters.find(e => e.id == id);
+        
+            if(!encounter) {
+              logger.error(`Encounter with id ${id} not found.`);
+              return res
+                .status(404)
+                .send('Encounter not found')
+            }
+            res.json(encounters)
         })
-        .catch(next)
-    })
+        .delete((req, res) => {
+        
+            const { encounterId } = req.params;
+
+            const index = encounters.findIndex(u => u.id === encounterId);
+
+            if (index === -1) {
+            return res
+              .status(404)
+              .send('Encounter not found')
+          }
+        
+            encounters.splice(index, 1);
+                res
+                .status(204)
+                .end()
+        });
+        
+module.exports = encountersRouter

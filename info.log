@@ -16,3 +16,10 @@
 {"message":"Monster with id 671fd8f2-20f8-488e-bd51-6262fbe27849 added to encounter with id 7f1cf20d-ee2f-49dc-b3bc-376cece7816d","level":"info"}
 {"message":"Monster with id bf40efb6-e1b6-44a2-b992-4a361d56265e added to encounter with id 5e5d11a3-6ca6-4838-b225-c2e44b76fdea","level":"info"}
 {"message":"Status Effects are required","level":"error"}
+{"message":"Monster with id 1c9fe3ea-fb0e-49d2-83d6-2fb78c14398a added to encounter with id ca570242-fa79-4873-b7f4-215dfc1f9753","level":"info"}
+{"message":"Monster with id 1c9fe3ea-fb0e-49d2-83d6-2fb78c14398a not found.","level":"error"}
+{"message":"Monster with id 1c9fe3ea-fb0e-49d2-83d6-2fb78c14398a not found.","level":"error"}
+{"message":"Monster with id 3c4eb57b-2ceb-4d2a-867e-bd0bc2bc4746 added to encounter with id 9e8f833d-1299-4c01-a4c0-31969f594e17","level":"info"}
+{"message":"Monster with id 1c9fe3ea-fb0e-49d2-83d6-2fb78c14398a not found.","level":"error"}
+{"message":"Monster with id 1c9fe3ea-fb0e-49d2-83d6-2fb78c14398a not found.","level":"error"}
+{"message":"monster with id 3c4eb57b-2ceb-4d2a-867e-bd0bc2bc4746 deleted.","level":"info"}
