@@ -20,6 +20,10 @@ app.use(express.json())
  app.use(encountersRouter)
  app.use(monsterRouter)
 
+ app.get('/', (req, res) => {
+   res.send('Hello, world!')
+ })
+
 app.use(function errorHandler(error, req, res, next) {
     let response
     if (NODE_ENV === 'production') {

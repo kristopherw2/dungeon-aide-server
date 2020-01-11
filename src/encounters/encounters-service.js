@@ -3,7 +3,7 @@ const EncountersService = {
         return knex.select('*').from('encounters')
     },
     getEncountersByUser(knex, users) {
-        return knex.from('encounters').select('*').where('users', users)
+        return knex.from('encounters').select('*').where('users', users).first()
     },
     createNewEncounter(knex, newEncounter) {
         return knex
@@ -12,7 +12,7 @@ const EncountersService = {
         .returning('names')
     },
     deleteEncounter(knex, id) {
-        return('encounters')
+        return knex('encounters')
         .where({ id })
         .delete()
     },

@@ -4,13 +4,10 @@ const { PORT, DB_URL } =require('./config')
 
 const db = knex({
   client: 'pg',
-  connection: DB_URL
+  connection: DB_URL || 'postgresql://dungeonaide@localhost/dungeon_aide'
 })
 
-
 app.set('db', db)
-
-//const PORT = process.env.PORT || 8000
 
 app.listen(PORT, () => {
   console.log(`Server listening at http://localhost:${PORT}`)

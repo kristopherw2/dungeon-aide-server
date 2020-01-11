@@ -11,7 +11,12 @@ const bodyParser = express.json()
 encountersRouter
     .route('/encounters')
     .get((req, res) => {
-        res.json(encounters);
+        const knexInstance = req.app.get('db')
+        EncountersService.getAllEncounters(knexInstance)
+            .then(encounters => {
+                res.json(encounters)
+            })
+            .catch(next)
     })
     .post(bodyParser, (req, res) => {
         const { name, user } = req.body
