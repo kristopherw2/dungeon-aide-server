@@ -1,5 +1,6 @@
 const EncountersService = require('../src/encounters/encounters-service')
 const knex = require('knex')
+
     let db
     
     //dummy data for users

@@ -10,7 +10,7 @@ const bodyParser = express.json()
 
 encountersRouter
     .route('/encounters')
-    .get((req, res) => {
+    .get((req, res, next) => {
         const knexInstance = req.app.get('db')
         EncountersService.getAllEncounters(knexInstance)
             .then(encounters => {
@@ -25,7 +25,7 @@ encountersRouter
             logger.error(`Name is required`);
             return res
               .status(400)
-              .send('Invalid data');
+              .send('Invalid Data');
         };
         
         if(!user) {
