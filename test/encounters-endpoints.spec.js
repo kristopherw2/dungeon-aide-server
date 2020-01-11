@@ -2,10 +2,12 @@ const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
 
-    //declare db variable
+
+describe('Encounters endpoints', function() {
+     //declare db variable
     let db
 
-    //dummy data for users table
+     //dummy data for users table
     const testUsers =[
         {
             id: 1,
@@ -33,7 +35,7 @@ const app = require('../src/app')
         }
     ];
 
-    //dummy data for encounters table
+     //dummy data for encounters table
     const testEncounters = [
         {
             id: 1,
@@ -52,7 +54,7 @@ const app = require('../src/app')
         },
     ];
 
-    //create knexinstance
+     //create knexinstance
     before('make knex instance', () => {
         db = knex({
             client: 'pg',
@@ -68,8 +70,6 @@ const app = require('../src/app')
     });
 
     after('disconnect from db', () => db.destroy());
-
-//describe('Encounters endpoints', function() {});
 
     context('given there are encounters in the database', () => {
         
@@ -91,3 +91,4 @@ const app = require('../src/app')
             .expect(200, testEncounters)
         });
     });
+});
