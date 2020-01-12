@@ -1,54 +1,15 @@
 const EncountersService = require('../src/encounters/encounters-service')
 const knex = require('knex')
+const { makeUsersArray } = require('./users.fixtures')
+const { makeEncountersArray } = require('./encounters.fixtures')
 
     let db
     
     //dummy data for users
-    let testUsers =[
-        {
-            id: 1,
-            username: 'firstuser',
-            password: 'password',
-            email: 'firstuser@email.com'
-        },
-        {
-            id: 2,
-            username: 'seconduser',
-            password: 'password',
-            email: 'seconduser@email.com'
-        },
-        {
-            id: 3,
-            username: 'thirduser',
-            password: 'password',
-            email: 'thirduser@email.com'
-        },
-        {
-            id: 10,
-            username: 'fourthuser',
-            password: 'password',
-            email: 'fourthuser@email.com'
-        }
-    ]
+    let testUsers = makeUsersArray();
 
     //dummy data for encounters
-    let testEncounters = [
-        {
-            id: 1,
-            names: 'Goblin Horde',
-            users: 1,
-        },
-        {
-            id: 2,
-            names: 'Orc Adventure',
-            users: 2,
-        },
-        {
-            id: 3,
-            names: 'Bard Seduction',
-            users: 3
-        },
-    ];
+    let testEncounters = makeEncountersArray();
 
     //create knex instance
     before(() => {

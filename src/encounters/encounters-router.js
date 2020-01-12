@@ -18,60 +18,75 @@ encountersRouter
             })
             .catch(next)
     })
-    .post(bodyParser, (req, res) => {
-        const { name, user } = req.body
+    .post(bodyParser, (req, res, next) => {
+        const { names, users } = req.body 
+        const newEncounter = { names, users }
+        EncountersService.createNewEncounter(
+            req.app.get('db'),
+            newEncounter
+        )
+            .then(encounter => {
+                res
+                    .status(201)
+                    .location(`/encounters/${encounter.id}`)
+                    .json(encounter)
+            })
+            .catch(next)
         
-        if(!name) {
-            logger.error(`Name is required`);
-            return res
-              .status(400)
-              .send('Invalid Data');
-        };
+        // if(!names) {
+        //     logger.error(`Name is required`);
+        //     return res
+        //       .status(400)
+        //       .send('Invalid Data');
+        // };
         
-        if(!user) {
-            logger.error(`user is required`);
-            return res
-            .status(404)
-            .send('Invalid Data')
-        };
+        // if(!users) {
+        //     logger.error(`user is required`);
+        //     return res
+        //     .status(404)
+        //     .send('Invalid Data')
+        // };
         
-        if(typeof user !== "number") {
-            logger.error(`user is not a number`)
-            return res
-            .status(400)
-            .send('user must be a number')
-        };
+        // if(typeof users !== "number") {
+        //     logger.error(`user is not a number`)
+        //     return res
+        //     .status(400)
+        //     .send('user must be a number')
+        // };
         
-        const id = uuid();
+        // const id = uuid();
         
-        const newEncounter = {
-            id,
-            name,
-            user
-        };
+        // const newEncounter = {
+        //     id,
+        //     names,
+        //     users
+        // };
         
-        encounters.push(newEncounter)
+        // encounters.push(newEncounter)
         
-        logger.info(`Encounter with id ${id} created`);
-        res
-            .status(201)
-            .location(`http://localhost:8000/encounters/${id}`)
-            .json(newEncounter)
+        // logger.info(`Encounter with id ${id} created`);
+        // res
+        //     .status(201)
+        //     .location(`http://localhost:8000/encounters/${id}`)
+        //     .json(newEncounter)
         });
 
 encountersRouter
-        .route('/encounters/:id')
-        .get((req, res) => {
-            const { id } = req.params;
-            const encounter = encounters.find(e => e.id == id);
-        
-            if(!encounter) {
-              logger.error(`Encounter with id ${id} not found.`);
-              return res
-                .status(404)
-                .send('Encounter not found')
-            }
-            res.json(encounters)
+        .route('/encounters/:encounter_id')
+        .get((req, res, next) => {
+            const knexInstance = req.app.get('db')
+            EncountersService.getEncounterById(knexInstance, req.params.encounter_id)
+            .then(encounter => {
+                if(!encounter) {
+                  return res
+                    .status(404)
+                    .json({
+                        error: {message: `Encounter doesn't exist`}
+                    })
+                }
+                res.json(encounter)
+            })
+            .catch(next)
         })
         .delete((req, res) => {
         
