@@ -6,7 +6,6 @@ const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 const encountersRouter = require('./encounters/encounters-router')
 const monsterRouter = require('./monsters/monsters-router')
-const uuid = require('uuid/v4')
 
 const app = express()
 
@@ -17,8 +16,8 @@ app.use(helmet())
 app.use(cors())
 app.use(express.json())
 
- app.use(encountersRouter)
- app.use(monsterRouter)
+ app.use('/encounters', encountersRouter)
+ app.use('/monsters',monsterRouter)
 
  app.get('/', (req, res) => {
    res.send('Hello, world!')

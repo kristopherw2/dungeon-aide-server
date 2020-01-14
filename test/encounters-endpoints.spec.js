@@ -80,6 +80,34 @@ describe('GET /encounters/encounter_id', function() {
             .expect(200, expectedEncounter)
         });
     });
+
+    context(`Given an XSS attack encounter`, () => {
+        const maliciousEncounter = {
+            id: 22,
+            names: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
+            users: 3
+        };
+
+        beforeEach(`insert malicious encounter`, () => {
+            return db
+            .into('users')
+            .insert(testUsers)
+            .then(() => {
+            return db
+            .into('encounters')
+            .insert(maliciousEncounter)
+            });
+        });
+
+        it(`removes XSS attack`, () => {
+            return supertest(app)
+            .get(`/encounters/${maliciousEncounter.id}`)
+            .expect(200)
+            .expect(res => {
+                expect(res.body.names).to.eql(`Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`)
+            })
+        });
+    });
 });
 
 describe(`Get /encounters`, () => {
@@ -103,7 +131,7 @@ describe('GET /encounters/:encounter_id', () => {
     });
 });
 
-describe.only('POST /encounters', () => {
+describe('POST /encounters', () => {
     
     beforeEach('insert users', () => {
         return db
@@ -122,15 +150,64 @@ describe.only('POST /encounters', () => {
         .send(newEncounter)
         .expect(201)
         .expect(res => {
-            expect(res.body.names).to.eql(newEncounter.names)
-            expect(res.body.users).to.eql(newEncounter.users)
-            expect(res.body).to.have.property('id')
+            expect(res.body[0].names).to.eql(newEncounter.names)
+        //     expect(res.body.users).to.eql(newEncounter.users)
+            expect(res.body[0]).to.have.property('id')
             expect(res.headers.location).to.eql(`/encounters/${res.body.id}`)
         })
         .then(postRes => {
             supertest(app)
             .get(`/encounters/${postRes.body.id}`)
-            .expect(postRes.body)
+            .expect(postRes.body[0])
+        });
+    });
+
+    it(`responds with 400 and an error message when the 'names' property is missing`, () => {
+        return supertest(app)
+        .post('/encounters')
+        .send({
+            users: 2
+        })
+        .expect(400, { error: { message: `Missing 'name' in encounter`} })
+    });
+});
+
+describe(`DELETE /encounters/:encounter_id`, () => {
+    context(`Given there are encounters in the database`, () => {
+
+        beforeEach(`Insert encounters and users`, () => {
+            return db
+            .into('users')
+            .insert(testUsers)
+            .then(() => {
+                return db
+                .into('encounters')
+                .insert(testEncounters)
+            });
+        });
+
+        it('responds with 204 and removes the encounter', () => {
+            const idToRemove = 2;
+            const expectedEncounter = testEncounters.filter(encounter => encounter.id !== idToRemove)
+
+            return supertest(app)
+            .delete(`/encounters/${idToRemove}`)
+            .expect(204)
+            .then(res =>
+                supertest(app)
+                .get('/encounters')
+                .expect(expectedEncounter)
+                );
+        });
+    });
+
+    context(`Given no encounters`, () => {
+        it(`responds with 404`, () => {
+            const encounterId = 123456789;
+
+            return supertest(app)
+            .delete(`/encounters/${encounterId}`)
+            .expect(404, { error: { message: `Encounter doesn't exist`} } )
         });
     });
 });

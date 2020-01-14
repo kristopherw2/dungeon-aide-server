@@ -12,7 +12,7 @@ const EncountersService = {
         return knex
         .insert(newEncounter)
         .into('encounters')
-        .returning('names')
+        .returning(['id','names'])
     },
     deleteEncounter(knex, id) {
         return knex('encounters')

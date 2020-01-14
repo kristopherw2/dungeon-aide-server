@@ -1,15 +1,14 @@
 const path = require('path')
 const express = require('express')
-const uuid = require('uuid/v4')
-const logger = require('../logger')
 const { encounters, monsters } = require('../store')
 const EncountersService = require('./encounters-service')
 
 const encountersRouter = express.Router()
 const bodyParser = express.json()
+const xss = require('xss')
 
 encountersRouter
-    .route('/encounters')
+    .route('/')
     .get((req, res, next) => {
         const knexInstance = req.app.get('db')
         EncountersService.getAllEncounters(knexInstance)
@@ -21,6 +20,13 @@ encountersRouter
     .post(bodyParser, (req, res, next) => {
         const { names, users } = req.body 
         const newEncounter = { names, users }
+
+        if(!names) {
+            return res.status(400).json({
+                error: { message: `Missing 'name' in encounter`}
+            })
+        };
+
         EncountersService.createNewEncounter(
             req.app.get('db'),
             newEncounter
@@ -72,7 +78,21 @@ encountersRouter
         });
 
 encountersRouter
-        .route('/encounters/:encounter_id')
+        .route('/:encounter_id')
+        .all((req, res, next) => {
+            EncountersService.getEncounterById(
+                req.app.get('db'),
+                req.params.encounter_id
+            )
+            .then(encounter => {
+                if(!encounter){
+                    return res.status(404).json({ error: { message: `Encounter doesn't exist` } })
+                }
+                res.encounter = encounter
+                next()
+            })
+            .catch(next)
+        })
         .get((req, res, next) => {
             const knexInstance = req.app.get('db')
             EncountersService.getEncounterById(knexInstance, req.params.encounter_id)
@@ -84,26 +104,38 @@ encountersRouter
                         error: {message: `Encounter doesn't exist`}
                     })
                 }
-                res.json(encounter)
+                res.json({
+                    id: encounter.id,
+                    names: xss(encounter.names),
+                    users: encounter.users
+                });
             })
             .catch(next)
         })
-        .delete((req, res) => {
+        .delete((req, res, next) => {
+            EncountersService.deleteEncounter(
+                req.app.get('db'),
+                req.params.encounter_id
+            )
+            .then(() => {
+                res.status(204).end()
+            })
+            .catch(next)
         
-            const { encounterId } = req.params;
+        //     const { encounterId } = req.params;
 
-            const index = encounters.findIndex(u => u.id === encounterId);
+        //     const index = encounters.findIndex(u => u.id === encounterId);
 
-            if (index === -1) {
-            return res
-              .status(404)
-              .send('Encounter not found')
-          }
+        //     if (index === -1) {
+        //     return res
+        //       .status(404)
+        //       .send('Encounter not found')
+        //   }
         
-            encounters.splice(index, 1);
-                res
-                .status(204)
-                .end()
+        //     encounters.splice(index, 1);
+        //         res
+        //         .status(204)
+        //         .end()
         });
         
 module.exports = encountersRouter
