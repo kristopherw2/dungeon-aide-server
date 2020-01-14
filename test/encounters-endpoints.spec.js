@@ -36,7 +36,7 @@ afterEach(() => {
 after('disconnect from db', () => db.destroy());
 
 
-describe('GET /encounters', function() {
+describe('GET /api/encounters', function() {
     context('given there are encounters in the database', () => {
         
         //have to insert users and encounters data due to FK restraints
@@ -51,15 +51,15 @@ describe('GET /encounters', function() {
                 })
         });
 
-        it('GET /encounters responds with 200 and all the encounters', () => {
+        it('GET /api/encounters responds with 200 and all the encounters', () => {
             return supertest(app)
-            .get('/encounters')
+            .get('/api/encounters')
             .expect(200, testEncounters)
         });
     });
 });
 
-describe('GET /encounters/encounter_id', function() {
+describe('GET /api/encounters/encounter_id', function() {
     context('given there are encounters in the database', () => {
     //have to insert users and encounters data due to FK restraints
     beforeEach('insert encounters', () => {
@@ -72,11 +72,11 @@ describe('GET /encounters/encounter_id', function() {
                 .insert(testEncounters)
             })
     });
-        it('GET /encounters/:encounterId', () => {
+        it('GET /api/encounters/:encounterId', () => {
             const encounterId = 2;
             const expectedEncounter = testEncounters[encounterId - 1];
             return supertest(app)
-            .get(`/encounters/${encounterId}`)
+            .get(`/api/encounters/${encounterId}`)
             .expect(200, expectedEncounter)
         });
     });
@@ -101,7 +101,7 @@ describe('GET /encounters/encounter_id', function() {
 
         it(`removes XSS attack`, () => {
             return supertest(app)
-            .get(`/encounters/${maliciousEncounter.id}`)
+            .get(`/api/encounters/${maliciousEncounter.id}`)
             .expect(200)
             .expect(res => {
                 expect(res.body.names).to.eql(`Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`)
@@ -110,28 +110,28 @@ describe('GET /encounters/encounter_id', function() {
     });
 });
 
-describe(`Get /encounters`, () => {
+describe(`Get /api/encounters`, () => {
     context('given no encounters', () => {
         it('responds with 200 and an empty array', () => {
             return supertest(app)
-            .get('/encounters')
+            .get('/api/encounters')
             .expect(200, [])
         });
     });
 });
 
-describe('GET /encounters/:encounter_id', () => {
+describe('GET /api/encounters/:encounter_id', () => {
     context('Given there is no encounters', () => {
         it('responds with 404', () => {
             const encounterId = 123456;
             return supertest(app)
-            .get(`/encounters/${encounterId}`)
+            .get(`/api/encounters/${encounterId}`)
             .expect(404, {error: {message: `Encounter doesn't exist`} })
         });
     });
 });
 
-describe('POST /encounters', () => {
+describe('POST /api/encounters', () => {
     
     beforeEach('insert users', () => {
         return db
@@ -146,25 +146,26 @@ describe('POST /encounters', () => {
         }
 
         return supertest(app)
-        .post('/encounters')
+        .post('/api/encounters')
         .send(newEncounter)
         .expect(201)
         .expect(res => {
             expect(res.body[0].names).to.eql(newEncounter.names)
         //     expect(res.body.users).to.eql(newEncounter.users)
             expect(res.body[0]).to.have.property('id')
-            expect(res.headers.location).to.eql(`/encounters/${res.body.id}`)
+            console.log(res.body[0].id);
+            expect(res.headers.location).to.eql(`/api/encounters/${res.body[0].id}`)
         })
         .then(postRes => {
             supertest(app)
-            .get(`/encounters/${postRes.body.id}`)
+            .get(`/api/encounters/${postRes.body.id}`)
             .expect(postRes.body[0])
         });
     });
 
     it(`responds with 400 and an error message when the 'names' property is missing`, () => {
         return supertest(app)
-        .post('/encounters')
+        .post('/api/encounters')
         .send({
             users: 2
         })
@@ -172,7 +173,7 @@ describe('POST /encounters', () => {
     });
 });
 
-describe(`DELETE /encounters/:encounter_id`, () => {
+describe(`DELETE /api/encounters/:encounter_id`, () => {
     context(`Given there are encounters in the database`, () => {
 
         beforeEach(`Insert encounters and users`, () => {
@@ -191,11 +192,11 @@ describe(`DELETE /encounters/:encounter_id`, () => {
             const expectedEncounter = testEncounters.filter(encounter => encounter.id !== idToRemove)
 
             return supertest(app)
-            .delete(`/encounters/${idToRemove}`)
+            .delete(`/api/encounters/${idToRemove}`)
             .expect(204)
             .then(res =>
                 supertest(app)
-                .get('/encounters')
+                .get('/api/encounters')
                 .expect(expectedEncounter)
                 );
         });
@@ -206,8 +207,62 @@ describe(`DELETE /encounters/:encounter_id`, () => {
             const encounterId = 123456789;
 
             return supertest(app)
-            .delete(`/encounters/${encounterId}`)
+            .delete(`/api/encounters/${encounterId}`)
             .expect(404, { error: { message: `Encounter doesn't exist`} } )
+        });
+    });
+});
+
+describe(`PATCH /api/encounters/:encounter_id`, () => {
+    context(`Given no articles`, () => {
+        it(`responds with 404`, () => {
+            const encounterId = 123456;
+            return supertest(app)
+                .patch(`/api/encounters/${encounterId}`)
+                .expect(404, { error: { message: `Encounter doesn't exist` } })
+        });
+    });
+
+    context(`Given there are encounters in the database`, () => {
+        
+        beforeEach(`inserts users and encounters`, () => {
+            return db
+                .into('users')
+                .insert(testUsers)
+                .then(() => {
+                    return db
+                    .into('encounters')
+                    .insert(testEncounters)
+                })
+        });
+
+        it(`responds with 204 and updates the encounter`, () => {
+            const idToUpdate = 2;
+            const updatedEncounter = {
+                names: "This be the updated name"
+            };
+            const expectedEncounter = {
+                ...testEncounters[idToUpdate - 1],
+                ...updatedEncounter
+            };
+
+            return supertest(app)
+                .patch(`/api/encounters/${idToUpdate}`)
+                .send(updatedEncounter)
+                .expect(204)
+                .then(res =>
+                    supertest(app)
+                    .get(`/api/encounters/${idToUpdate}`)
+                    .expect(expectedEncounter)
+                    )
+        });
+
+        it.only(`responds with 400 when no required fields are supplied`, () => {
+            const idToUpdate = 2;
+            return supertest(app)
+                .patch(`/api/encounters/${idToUpdate}`)
+                .send({ irrelevantField: "yep" })
+                .expect(400, { error: { message: 'Request must contain a name'} } )
         });
     });
 });

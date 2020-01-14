@@ -16,7 +16,7 @@ app.use(helmet())
 app.use(cors())
 app.use(express.json())
 
- app.use('/encounters', encountersRouter)
+ app.use('/api/encounters', encountersRouter)
  app.use('/monsters',monsterRouter)
 
  app.get('/', (req, res) => {

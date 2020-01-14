@@ -18,8 +18,8 @@ encountersRouter
             .catch(next)
     })
     .post(bodyParser, (req, res, next) => {
-        const { names, users } = req.body 
-        const newEncounter = { names, users }
+        const { names, users, id } = req.body 
+        const newEncounter = { names, users, id }
 
         if(!names) {
             return res.status(400).json({
@@ -34,7 +34,7 @@ encountersRouter
             .then(encounter => {
                 res
                     .status(201)
-                    .location(`/encounters/${encounter.id}`)
+                    .location(path.posix.join(req.originalUrl + `/${encounter[0].id}`))
                     .json(encounter)
             })
             .catch(next)
@@ -136,6 +136,27 @@ encountersRouter
         //         res
         //         .status(204)
         //         .end()
+        })
+        .patch(bodyParser, (req, res, next) => {
+            const {id, names, users} = req.body
+            const encounterToUpdate = {id, names, users};
+            const numberOfValues = Object.values(encounterToUpdate).filter(Boolean).length
+            if (numberOfValues === 0) {
+                return res.status(400).json({
+                    error: {
+                        message: `Request must contain a name`
+                    }
+                })
+            }
+            EncountersService.updateEncounter(
+                req.app.get('db'),
+                req.params.encounter_id,
+                encounterToUpdate
+            )
+            .then(numRowsAffected => {
+                res.status(204).end()
+            })
+            .catch(next)
         });
         
 module.exports = encountersRouter
