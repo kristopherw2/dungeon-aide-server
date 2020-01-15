@@ -257,12 +257,36 @@ describe(`PATCH /api/encounters/:encounter_id`, () => {
                     )
         });
 
-        it.only(`responds with 400 when no required fields are supplied`, () => {
+        it(`responds with 400 when no required fields are supplied`, () => {
             const idToUpdate = 2;
             return supertest(app)
                 .patch(`/api/encounters/${idToUpdate}`)
                 .send({ irrelevantField: "yep" })
                 .expect(400, { error: { message: 'Request must contain a name'} } )
+        });
+
+        it(`responds with 204 when updating only a subset of field`, () => {
+            const idToUpdate = 2;
+            const updatedEncounter = {
+                names: "This be the updated name"
+            };
+            const expectedEncounter = {
+                ...testEncounters[idToUpdate - 1],
+                ...updatedEncounter
+            };
+
+                return supertest(app)
+                    .patch(`/api/encounters/${idToUpdate}`)
+                    .send({
+                        ...updatedEncounter,
+                        fieldToIgnore: "this should not be in the GET response"
+                    })
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)
+                        .get(`/api/encounters/${idToUpdate}`)
+                        .expect(expectedEncounter)
+                    )
         });
     });
 });
