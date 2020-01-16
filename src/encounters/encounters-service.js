@@ -23,7 +23,7 @@ const EncountersService = {
         return knex('encounters')
         .where( { id })
         .update(newEncounterMonster)
-    }
+    },
 }
 
 module.exports = EncountersService
