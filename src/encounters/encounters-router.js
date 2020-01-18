@@ -98,7 +98,7 @@ encountersRouter
             EncountersService.getEncounterById(knexInstance, req.params.encounter_id)
             .then(encounter => {
                 if(!encounter) {
-                  return res
+                return res
                     .status(404)
                     .json({
                         error: {message: `Encounter doesn't exist`}

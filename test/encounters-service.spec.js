@@ -2,6 +2,7 @@ const EncountersService = require('../src/encounters/encounters-service')
 const knex = require('knex')
 const { makeUsersArray } = require('./users.fixtures')
 const { makeEncountersArray } = require('./encounters.fixtures')
+const { makeMonstersArray } = require('./monsters.fixtures')
 
     let db
     
@@ -10,6 +11,9 @@ const { makeEncountersArray } = require('./encounters.fixtures')
 
     //dummy data for encounters
     let testEncounters = makeEncountersArray();
+
+    //dummy data for monsters
+    let testMonsters = makeMonstersArray();
 
     //create knex instance
     before(() => {
@@ -34,18 +38,18 @@ const { makeEncountersArray } = require('./encounters.fixtures')
     after(() => db.destroy());
 
 
-    context(`given 'encounters' has data`, function() {
+    context(`given 'encounters' has data`, () => {
         
-        beforeEach(() => {
-            return db
-                .into('users')
-                .insert(testUsers)
-                .then(() => {
-              return db
-                .into('encounters')
-                .insert(testEncounters)
-            })
-        });
+        // beforeEach(() => {
+        //     return db
+        //         .into('users')
+        //         .insert(testUsers)
+        //         .then(() => {
+        //             return db
+        //                 .into('encounters')
+        //                 .insert(testEncounters)
+        //         })
+        // });
     
         it(`getAllEncounters() resolves all encounters from the 'encounters' table`, () => {
             return EncountersService.getAllEncounters(db)
