@@ -101,24 +101,32 @@ monsterRouter
       })
       .catch(next)
     })
-    .delete((req, res) => {
-        const { id } = req.params;
+    .delete((req, res, next) => {
+      MonsterService.deleteMonsterById(
+        req.app.get('db'),
+        req.params.monster_id
+      )
+      .then(() => {
+        res.status(204).end()
+      })
+      .catch(next)
+        // const { id } = req.params;
 
-        const monsterIndex = monsters.findIndex(m => m.id == id);
+        // const monsterIndex = monsters.findIndex(m => m.id == id);
     
-        if(monsterIndex === -1) {
-          logger.error(`Monster with id ${id} not found.`);
-          return res
-            .status(404)
-            .send('Not Found');
-        }
+        // if(monsterIndex === -1) {
+        //   logger.error(`Monster with id ${id} not found.`);
+        //   return res
+        //     .status(404)
+        //     .send('Not Found');
+        // }
     
-        monsters.splice(monsterIndex, 1);
+        // monsters.splice(monsterIndex, 1);
     
-        logger.info(`monster with id ${id} deleted.`);
-        res
-          .status(204)
-          .end();
+        // logger.info(`monster with id ${id} deleted.`);
+        // res
+        //   .status(204)
+        //   .end();
     })
 
 module.exports = monsterRouter
