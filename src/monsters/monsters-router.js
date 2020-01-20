@@ -1,19 +1,25 @@
 const express = require('express')
-const uuid = require('uuid/v4')
 const path = require('path')
 const { encounters, monsters } = require('../store')
 const MonsterService = require('./monsters-service')
 
 const monsterRouter = express.Router()
 const bodyParser = express.json()
+const xss = require('xss')
 
 monsterRouter
-    .route('/monster')
-    .get((req, res) => {
-        res.json(monsters)
+    .route('/')
+    .get((req, res, next) => {
+      const knexInstance = req.app.get('db')
+      MonsterService.getAllMonsters(knexInstance)
+          .then(monsters => {
+            res.json(monsters)
+          })
+          .catch(next)
     })
-    .post(bodyParser, (req, res) => {
-        const { name, health, armorClass, statusEffect } = req.body
+    .post(bodyParser, (req, res, next) => {
+        const { name, health, armor_class, status_effects, encounter } = req.body
+        const newMonster = { name, health, armor_class, status_effects, encounter }
     
         if(!name) {
           logger.error(`Name is required`);
@@ -23,61 +29,77 @@ monsterRouter
         }
     
         if(!health) {
-          logger.error(`health is required`);
-          return res
-            .status(400)
-            .send('Invalid data');
+          return res.status(400).json({
+            error: { message: `Missing 'name' for monster`}
+          })
         }
     
-        if(!armorClass) {
-          logger.error(`Armor Class is required`);
+        if(!armor_class) {
           return res
             .status(400)
-            .send('Invalid data');
+            .json({
+              error: { message: `Missing 'armor class' for monster`}
+            })
         }
     
-        if(!statusEffect) {
-          logger.error(`Status Effects are required`);
+        if(!status_effects) {
           return res
             .status(400)
-            .send('Invalid data');
+            .json({
+              error: { message: `Missing 'status effects' for monster`}
+            })
         }
-    
-        const id = uuid();
-        const encounter = uuid();
-    
-        const newMonster = {
-          id,
-          name,
-          health,
-          armorClass,
-          statusEffect,
-          encounter
-        };
-    
-        monsters.push(newMonster);
-        
-        logger.info(`Monster with id ${id} added to encounter with id ${encounter}`);
-      
-        res
+
+        MonsterService.createNewMonster(
+          req.app.get('db'),
+          newMonster
+        )
+        .then(monster => {
+          res
           .status(201)
-          .location(`http://localhost:8000/monster/${id}`)
-          .json({monsters});
+          .location(path.posix.join(req.originalUrl + `/${monster[0].id}`))
+          .json(monster)
+        })
+        .catch(next)
       });
 
 monsterRouter
-    .route('/monster/:id')
-    .get((req, res) => {
-        const { id } = req.params;
-        const monster = monsters.find(e => e.id == id);
-    
-        if(!monster) {
-          logger.error(`Monster with id ${id} not found.`);
+    .route('/:monster_id')
+    .all((req, res, next) => {
+      console.log('CAPS MOTHERFUCKER')
+      MonsterService.getMonsterById (
+        req.app.get('db'),
+        req.params.monster_id
+        )
+        .then(monster => {
+          if(!monster) {
+            return res.status(404).json({ error: { message: `Monster does not exist`} })
+          }
+          res.monster = monster
+          next()
+        })
+        .catch(next)
+    })
+    .get((req, res, next) => {
+      const knexInstance = req.app.get('db')
+      MonsterService.getMonsterById(knexInstance, req.params.monster_id)
+      .then(monsters => {
+        
+        if(!monsters) {
           return res
             .status(404)
-            .send('Encounter not found')
+            .json({ error: { message: `Monster doesn't exist` } })
         }
-        res.json(monsters)
+        res.json({
+          id: monsters.id,
+          name: xss(monsters.name),
+          health:xss(monsters.health),
+          armor_class:xss(monsters.armor_class),
+          status_effects:xss(monsters.status_effects),
+          encounter: monsters.encounter
+        })
+      })
+      .catch(next)
     })
     .delete((req, res) => {
         const { id } = req.params;

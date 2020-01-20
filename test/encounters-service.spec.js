@@ -40,16 +40,21 @@ const { makeMonstersArray } = require('./monsters.fixtures')
 
     context(`given 'encounters' has data`, () => {
         
-        // beforeEach(() => {
-        //     return db
-        //         .into('users')
-        //         .insert(testUsers)
-        //         .then(() => {
-        //             return db
-        //                 .into('encounters')
-        //                 .insert(testEncounters)
-        //         })
-        // });
+        beforeEach(() => {
+            return db
+                .into('users')
+                .insert(testUsers)
+                .then(() => {
+                    return db
+                        .into('encounters')
+                        .insert(testEncounters)
+                        .then(() => {
+                            return db
+                            .into('monsters')
+                            .insert(testMonsters)
+                        })
+                })
+        });
     
         it(`getAllEncounters() resolves all encounters from the 'encounters' table`, () => {
             return EncountersService.getAllEncounters(db)

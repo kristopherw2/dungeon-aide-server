@@ -3,6 +3,7 @@ const knex = require('knex')
 const app = require('../src/app')
 const { makeUsersArray} = require('./users.fixtures')
 const { makeEncountersArray } = require('./encounters.fixtures')
+const { makeMonstersArray } = require('./monsters.fixtures')
 
  //declare db variable
  let db
@@ -12,6 +13,9 @@ const testUsers = makeUsersArray();
 
  //dummy data for encounters table
 const testEncounters = makeEncountersArray();
+
+//dummy data for monsters table
+const testMonsters = makeMonstersArray();
 
  //create knexinstance
 before('make knex instance', () => {
@@ -184,13 +188,18 @@ describe(`DELETE /api/encounters/:encounter_id`, () => {
                 return db
                 .into('encounters')
                 .insert(testEncounters)
+                .then(() => {
+                    return db
+                    .into('monsters')
+                    .insert(testMonsters)
+                })
             });
         });
 
         it('responds with 204 and removes the encounter', () => {
             const idToRemove = 2;
             const expectedEncounter = testEncounters.filter(encounter => encounter.id !== idToRemove)
-
+            const expectedMonsters = testMonsters.filter(monster => monster.encounter !== idToRemove)
             return supertest(app)
             .delete(`/api/encounters/${idToRemove}`)
             .expect(204)

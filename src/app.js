@@ -17,7 +17,7 @@ app.use(cors())
 app.use(express.json())
 
  app.use('/api/encounters', encountersRouter)
- app.use('/monsters',monsterRouter)
+ app.use('/api/monsters', monsterRouter)
 
  app.get('/', (req, res) => {
    res.send('Hello, world!')

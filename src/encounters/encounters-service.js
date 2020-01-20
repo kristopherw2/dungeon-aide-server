@@ -15,13 +15,18 @@ const EncountersService = {
         .returning(['id','names'])
     },
     deleteEncounter(knex, id) {
-        return knex('encounters')
-        .where({ id })
+        return knex('monsters') //deletes associated monsters from monsters table first
+        .where('monsters.encounter', id)
         .delete()
+        .then(() => {
+            return knex ('encounters') //deletes encounter by id
+            .where({ id })
+            .delete()
+        })
     },
     updateEncounter(knex, id, newEncounterMonster) {
         return knex('encounters')
-        .where( { id })
+        .where({ id })
         .update(newEncounterMonster)
     },
 }
