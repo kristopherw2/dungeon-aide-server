@@ -74,6 +74,11 @@ describe('GET /api/encounters/encounter_id', function() {
                 return db
                 .into('encounters')
                 .insert(testEncounters)
+                .then(() => {
+                    return db
+                    .into('monsters')
+                    .insert()
+                })
             })
     });
         it('GET /api/encounters/:encounterId', () => {
@@ -197,7 +202,7 @@ describe(`DELETE /api/encounters/:encounter_id`, () => {
         });
 
         it('responds with 204 and removes the encounter', () => {
-            const idToRemove = 2;
+            const idToRemove = 3;
             const expectedEncounter = testEncounters.filter(encounter => encounter.id !== idToRemove)
             const expectedMonsters = testMonsters.filter(monster => monster.encounter !== idToRemove)
             return supertest(app)
@@ -223,7 +228,7 @@ describe(`DELETE /api/encounters/:encounter_id`, () => {
 });
 
 describe(`PATCH /api/encounters/:encounter_id`, () => {
-    context(`Given no articles`, () => {
+    context(`Given no Encounters`, () => {
         it(`responds with 404`, () => {
             const encounterId = 123456;
             return supertest(app)

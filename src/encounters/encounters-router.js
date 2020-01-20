@@ -2,6 +2,7 @@ const path = require('path')
 const express = require('express')
 const { encounters, monsters } = require('../store')
 const EncountersService = require('./encounters-service')
+const MonstersService = require('../monsters/monsters-service')
 
 const encountersRouter = express.Router()
 const bodyParser = express.json()
@@ -85,6 +86,7 @@ encountersRouter
                 req.params.encounter_id
             )
             .then(encounter => {
+                console.log(encounter)
                 if(!encounter){
                     return res.status(404).json({ error: { message: `Encounter doesn't exist` } })
                 }

@@ -9,14 +9,14 @@ const xss = require('xss')
 
 monsterRouter
     .route('/')
-    .get((req, res, next) => {
-      const knexInstance = req.app.get('db')
-      MonsterService.getAllMonsters(knexInstance)
-          .then(monsters => {
-            res.json(monsters)
-          })
-          .catch(next)
-    })
+    // .get((req, res, next) => {
+    //   const knexInstance = req.app.get('db')
+    //   MonsterService.getMonstersByEncounterId(knexInstance, req.params.encounter_id)
+    //       .then(monsters => {
+    //         res.json(monsters)
+    //       })
+    //       .catch(next)
+    // })
     .post(bodyParser, (req, res, next) => {
         const { name, health, armor_class, status_effects, encounter } = req.body
         const newMonster = { name, health, armor_class, status_effects, encounter }
@@ -66,7 +66,6 @@ monsterRouter
 monsterRouter
     .route('/:monster_id')
     .all((req, res, next) => {
-      console.log('CAPS MOTHERFUCKER')
       MonsterService.getMonsterById (
         req.app.get('db'),
         req.params.monster_id
@@ -127,6 +126,17 @@ monsterRouter
         // res
         //   .status(204)
         //   .end();
+    })
+
+    monsterRouter
+    .route('/:encounter_id/monster')
+    .get((req, res, next) => {
+      const knexInstance = req.app.get('db')
+      MonsterService.getMonstersByEncounterId(knexInstance, req.params.encounter_id )
+      .then(monsters => {
+        res.json(monsters)
+      })
+      .catch(next)
     })
 
 module.exports = monsterRouter

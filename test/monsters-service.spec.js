@@ -63,5 +63,15 @@ context('Given monsters table has data', () => {
                 console.log(actual)
                 expect(actual[0]).to.eql(expectedMonster)
             })
-    })
+    });
+
+    it(`deleteMonsterById() deletes monster by ID from 'monsters' table `, () => {
+        const monsterId = 3;
+        return MonstersService.deleteMonsterById(db, monsterId)
+        .then(() => MonstersService.getAllMonsters(db))
+        .then(allMonsters => {
+            const expected = testMonsters.filter(item => item.id !== monsterId)
+            expect(allMonsters).to.eql(expected)
+        })
+    });
 });

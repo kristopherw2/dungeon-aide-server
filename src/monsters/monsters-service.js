@@ -13,6 +13,7 @@ const MonstersService = {
     },
 
     getMonstersByEncounterId (db, encounterId) {
+        console.log(`getMonstersByEncounterId has been called`)
         return db
         .from('monsters')
         .innerJoin('encounters', 'encounters.id', 'monsters.encounter')
