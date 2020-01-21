@@ -1,14 +1,10 @@
 const EncountersService = require('../src/encounters/encounters-service')
 const knex = require('knex')
-const { makeUsersArray } = require('./users.fixtures')
 const { makeEncountersArray } = require('./encounters.fixtures')
 const { makeMonstersArray } = require('./monsters.fixtures')
 
     let db
     
-    //dummy data for users
-    let testUsers = makeUsersArray();
-
     //dummy data for encounters
     let testEncounters = makeEncountersArray();
 
@@ -26,12 +22,12 @@ const { makeMonstersArray } = require('./monsters.fixtures')
 
     //truncate and cascade down due to FK restrictions
     before(() => {
-        return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
+        return db.raw('TRUNCATE TABLE encounters, monsters RESTART IDENTITY CASCADE')
     });
 
     //truncate tables after each test to prevent test leak
     afterEach(() => {
-        return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
+        return db.raw('TRUNCATE TABLE encounters, monsters RESTART IDENTITY CASCADE')
     });
 
     //disconnect after test
@@ -41,10 +37,6 @@ const { makeMonstersArray } = require('./monsters.fixtures')
     context(`given 'encounters' has data`, () => {
         
         beforeEach(() => {
-            return db
-                .into('users')
-                .insert(testUsers)
-                .then(() => {
                     return db
                         .into('encounters')
                         .insert(testEncounters)
@@ -54,8 +46,7 @@ const { makeMonstersArray } = require('./monsters.fixtures')
                             .insert(testMonsters)
                         })
                 })
-        });
-    
+
         it(`getAllEncounters() resolves all encounters from the 'encounters' table`, () => {
             return EncountersService.getAllEncounters(db)
             .then(actual => {
@@ -63,18 +54,17 @@ const { makeMonstersArray } = require('./monsters.fixtures')
             })
         });
 
-        it(`getEncountersByUser() resolves an encounter by user from 'encounters' table`, () => {
-            const secondId = 2;
-            const secondTestEncounter = testEncounters[secondId - 1];
-            return EncountersService.getEncountersByUser(db, secondId)
-                .then(actual => {
-                    expect(actual).to.eql({
-                        id: secondId,
-                        names: secondTestEncounter.names,
-                        users: secondId
-                    })
-                })
-        });
+        // it(`getEncountersByUser() resolves an encounter by user from 'encounters' table`, () => {
+        //     const secondId = 2;
+        //     const secondTestEncounter = testEncounters[secondId - 1];
+        //     return EncountersService.getEncountersByUser(db, secondId)
+        //         .then(actual => {
+        //             expect(actual).to.eql({
+        //                 id: secondId,
+        //                 names: secondTestEncounter.names,
+        //             })
+        //         })
+        // });
 
         it(`deleteEncounter() removes an encounter by id from 'encounters' table`, () => {
             const encounterId = 3;
@@ -94,24 +84,17 @@ const { makeMonstersArray } = require('./monsters.fixtures')
                 names: 'hanks carpet emporium'
             }
             return EncountersService.updateEncounter(db, idOfEncounterToUpdate, newEncounterData)
-                .then(() => EncountersService.getEncountersByUser(db, idOfEncounterToUpdate))
+                .then(() => EncountersService.getEncounterById(db, idOfEncounterToUpdate))
                 .then(encounter => {
                     expect(encounter).to.eql({
                         id: idOfEncounterToUpdate,
                         ...newEncounterData,
-                        users: idOfEncounterToUpdate
                     })
                 })
         });
     });
 
     context(`Given 'encounters' table has no data`, () => {
-
-        beforeEach(() => {
-            return db
-                .into('users')
-                .insert(testUsers)
-        });
 
         it(`getAllEncounters() resolves an empty array`, () => {
             return EncountersService.getAllEncounters(db)
@@ -124,7 +107,6 @@ const { makeMonstersArray } = require('./monsters.fixtures')
             const newEncounter = {
                 id: 1,
                 names: "De Besh Around",
-                users: 1
             }
             return EncountersService.createNewEncounter(db, newEncounter)
         });

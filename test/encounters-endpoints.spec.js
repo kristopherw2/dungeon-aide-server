@@ -1,15 +1,12 @@
 const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
-const { makeUsersArray} = require('./users.fixtures')
 const { makeEncountersArray } = require('./encounters.fixtures')
 const { makeMonstersArray } = require('./monsters.fixtures')
 
  //declare db variable
  let db
 
- //dummy data for users table
-const testUsers = makeUsersArray();
 
  //dummy data for encounters table
 const testEncounters = makeEncountersArray();
@@ -29,12 +26,12 @@ before('make knex instance', () => {
 
 //truncate all tables due to FK restraints before each test
 before(() => {
-    return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
+    return db.raw('TRUNCATE TABLE encounters, monsters RESTART IDENTITY CASCADE')
 });
 
 //truncate after each test to keep tables clean
 afterEach(() => {
-    return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
+    return db.raw('TRUNCATE TABLE encounters, monsters RESTART IDENTITY CASCADE')
 });
 
 after('disconnect from db', () => db.destroy());
@@ -43,17 +40,12 @@ after('disconnect from db', () => db.destroy());
 describe('GET /api/encounters', function() {
     context('given there are encounters in the database', () => {
         
-        //have to insert users and encounters data due to FK restraints
+        //have to insert encounters data
         beforeEach('insert encounters', () => {
-            return db
-            .into('users')
-            .insert(testUsers)
-            .then(() => {
                     return db
                     .into('encounters')
                     .insert(testEncounters)
                 })
-        });
 
         it('GET /api/encounters responds with 200 and all the encounters', () => {
             return supertest(app)
@@ -65,12 +57,8 @@ describe('GET /api/encounters', function() {
 
 describe('GET /api/encounters/encounter_id', function() {
     context('given there are encounters in the database', () => {
-    //have to insert users and encounters data due to FK restraints
+    //have to insert encounters data due to FK restraints
     beforeEach('insert encounters', () => {
-        return db
-        .into('users')
-        .insert(testUsers)
-        .then(() => {
                 return db
                 .into('encounters')
                 .insert(testEncounters)
@@ -79,8 +67,8 @@ describe('GET /api/encounters/encounter_id', function() {
                     .into('monsters')
                     .insert()
                 })
-            })
-    });
+            });
+
         it('GET /api/encounters/:encounterId', () => {
             const encounterId = 2;
             const expectedEncounter = testEncounters[encounterId - 1];
@@ -94,19 +82,13 @@ describe('GET /api/encounters/encounter_id', function() {
         const maliciousEncounter = {
             id: 22,
             names: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
-            users: 3
         };
 
         beforeEach(`insert malicious encounter`, () => {
             return db
-            .into('users')
-            .insert(testUsers)
-            .then(() => {
-            return db
             .into('encounters')
             .insert(maliciousEncounter)
             });
-        });
 
         it(`removes XSS attack`, () => {
             return supertest(app)
@@ -141,17 +123,10 @@ describe('GET /api/encounters/:encounter_id', () => {
 });
 
 describe('POST /api/encounters', () => {
-    
-    beforeEach('insert users', () => {
-        return db
-        .into('users')
-        .insert(testUsers)
-    });
 
     it(`creates a new encounter, responds with 201 and the new encounter`, ()=>{
         const newEncounter = {
-            names: 'BIG DRAGON',
-            users: 1
+            names: 'BIG DRAGON'
         }
 
         return supertest(app)
@@ -160,7 +135,6 @@ describe('POST /api/encounters', () => {
         .expect(201)
         .expect(res => {
             expect(res.body[0].names).to.eql(newEncounter.names)
-        //     expect(res.body.users).to.eql(newEncounter.users)
             expect(res.body[0]).to.have.property('id')
             console.log(res.body[0].id);
             expect(res.headers.location).to.eql(`/api/encounters/${res.body[0].id}`)
@@ -176,7 +150,6 @@ describe('POST /api/encounters', () => {
         return supertest(app)
         .post('/api/encounters')
         .send({
-            users: 2
         })
         .expect(400, { error: { message: `Missing 'name' in encounter`} })
     });
@@ -185,11 +158,7 @@ describe('POST /api/encounters', () => {
 describe(`DELETE /api/encounters/:encounter_id`, () => {
     context(`Given there are encounters in the database`, () => {
 
-        beforeEach(`Insert encounters and users`, () => {
-            return db
-            .into('users')
-            .insert(testUsers)
-            .then(() => {
+        beforeEach(`Insert encounters and monsters`, () => {
                 return db
                 .into('encounters')
                 .insert(testEncounters)
@@ -199,7 +168,6 @@ describe(`DELETE /api/encounters/:encounter_id`, () => {
                     .insert(testMonsters)
                 })
             });
-        });
 
         it('responds with 204 and removes the encounter', () => {
             const idToRemove = 3;
@@ -239,16 +207,11 @@ describe(`PATCH /api/encounters/:encounter_id`, () => {
 
     context(`Given there are encounters in the database`, () => {
         
-        beforeEach(`inserts users and encounters`, () => {
-            return db
-                .into('users')
-                .insert(testUsers)
-                .then(() => {
+        beforeEach(`inserts encounters`, () => {
                     return db
                     .into('encounters')
                     .insert(testEncounters)
-                })
-        });
+                });
 
         it(`responds with 204 and updates the encounter`, () => {
             const idToUpdate = 2;

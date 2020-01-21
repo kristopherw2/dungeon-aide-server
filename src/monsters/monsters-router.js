@@ -9,14 +9,14 @@ const xss = require('xss')
 
 monsterRouter
     .route('/')
-    // .get((req, res, next) => {
-    //   const knexInstance = req.app.get('db')
-    //   MonsterService.getMonstersByEncounterId(knexInstance, req.params.encounter_id)
-    //       .then(monsters => {
-    //         res.json(monsters)
-    //       })
-    //       .catch(next)
-    // })
+    .get((req, res, next) => {
+      const knexInstance = req.app.get('db')
+      MonsterService.getMonstersByEncounterId(knexInstance, req.params.encounter_id)
+          .then(monsters => {
+            res.json(monsters)
+          })
+          .catch(next)
+    })
     .post(bodyParser, (req, res, next) => {
         const { name, health, armor_class, status_effects, encounter } = req.body
         const newMonster = { name, health, armor_class, status_effects, encounter }
@@ -109,23 +109,6 @@ monsterRouter
         res.status(204).end()
       })
       .catch(next)
-        // const { id } = req.params;
-
-        // const monsterIndex = monsters.findIndex(m => m.id == id);
-    
-        // if(monsterIndex === -1) {
-        //   logger.error(`Monster with id ${id} not found.`);
-        //   return res
-        //     .status(404)
-        //     .send('Not Found');
-        // }
-    
-        // monsters.splice(monsterIndex, 1);
-    
-        // logger.info(`monster with id ${id} deleted.`);
-        // res
-        //   .status(204)
-        //   .end();
     })
 
     monsterRouter

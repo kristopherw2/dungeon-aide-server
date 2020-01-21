@@ -1,16 +1,12 @@
 const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
-const { makeUsersArray} = require('./users.fixtures')
 const { makeEncountersArray } = require('./encounters.fixtures')
 const { makeMonstersArray } = require('./monsters.fixtures')
 
  //declare db variable
- let db
-
- //dummy data for users table
-const testUsers = makeUsersArray();
-
+ let db 
+ 
  //dummy data for encounters table
 const testEncounters = makeEncountersArray();
 
@@ -29,22 +25,18 @@ before('make knex instance', () => {
 
 //truncate all tables due to FK restraints before each test
 before(() => {
-    return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
+    return db.raw('TRUNCATE TABLE encounters, monsters RESTART IDENTITY CASCADE')
 });
 
 //truncate after each test to keep tables clean
 afterEach(() => {
-    return db.raw('TRUNCATE TABLE users, encounters, monsters RESTART IDENTITY CASCADE')
+    return db.raw('TRUNCATE TABLE encounters, monsters RESTART IDENTITY CASCADE')
 });
 
 after('disconnect from db', () => db.destroy());
 
 describe('Get /api/:encounter_id/monster', () => {
-    beforeEach('insert users, encounters, monsters', () => {
-        return db
-        .into('users')
-        .insert(testUsers)
-        .then(() => {
+    beforeEach('insert encounters, monsters', () => {
                 return db
                 .into('encounters')
                 .insert(testEncounters)
@@ -53,10 +45,9 @@ describe('Get /api/:encounter_id/monster', () => {
                     .into('monsters')
                     .insert(testMonsters)
                 })
-            })
-    });
+            });
 
-    it.only(`GET /api/monsters responds with 200 and monsters by encounter_id`, () => {
+    it(`GET /api/monsters responds with 200 and monsters by encounter_id`, () => {
         const encounter_id = 2;
         const expectedMonsters = testMonsters.filter(item => item.encounter === encounter_id)
         return supertest(app)
@@ -64,3 +55,7 @@ describe('Get /api/:encounter_id/monster', () => {
         .expect(200, expectedMonsters)
     })
 })
+
+    describe('POST /api/monsters', () => {
+        beforeEach()
+    })

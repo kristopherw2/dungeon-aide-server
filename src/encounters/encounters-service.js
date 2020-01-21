@@ -5,9 +5,9 @@ const EncountersService = {
     getEncounterById(knex, id) {
         return knex.from('encounters').select('*').where('id', id).first()
     },
-    getEncountersByUser(knex, users) {
-        return knex.from('encounters').select('*').where('users', users).first()
-    },
+    // getEncountersByUser(knex, users) {
+    //     return knex.from('encounters').select('*').where('users', users).first()
+    // },
     createNewEncounter(knex, newEncounter) {
         return knex
         .insert(newEncounter)
