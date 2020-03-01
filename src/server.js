@@ -1,11 +1,11 @@
 const app = require('./app')
 const knex = require('knex')
-const { PORT, DB_URL } =require('./config')
+const { PORT, DATABASE_URL } =require('./config')
 
 const db = knex({
-  client: 'pg',
-  connection: DB_URL /*|| 'postgresql://dungeonaide@localhost/dungeon_aide'*/
-})
+    client: "pg",
+    connection: DATABASE_URL || "postgresql://postgres@localhost/dungeon-aide"
+});
 
 app.set('db', db)
 

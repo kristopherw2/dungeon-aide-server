@@ -91,7 +91,7 @@ encountersRouter
                     return res.status(404).json({ error: { message: `Encounter doesn't exist` } })
                 }
                 res.encounter = encounter
-                next()
+                //next()
             })
             .catch(next)
         })
@@ -123,21 +123,6 @@ encountersRouter
                 res.status(204).end()
             })
             .catch(next)
-        
-        //     const { encounterId } = req.params;
-
-        //     const index = encounters.findIndex(u => u.id === encounterId);
-
-        //     if (index === -1) {
-        //     return res
-        //       .status(404)
-        //       .send('Encounter not found')
-        //   }
-        
-        //     encounters.splice(index, 1);
-        //         res
-        //         .status(204)
-        //         .end()
         })
         .patch(bodyParser, (req, res, next) => {
             const {id, names, users} = req.body

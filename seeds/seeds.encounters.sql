@@ -1,5 +1,5 @@
-INSERT INTO encounters (names, users)
+INSERT INTO encounters (id, names)
 VALUES
-('Goblin Horde', 1),
-('Orc Adventure', 2),
-('Bard Seduction', 3);
+(1, 'Goblin Horde'),
+(2, 'Orc Adventure'),
+(3, 'Bard Seduction');
