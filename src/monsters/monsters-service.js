@@ -13,17 +13,14 @@ const MonstersService = {
     },
 
     getMonstersByEncounterId (db, encounterId) {
-        console.log(`getMonstersByEncounterId has been called`)
         return db
         .from('monsters')
-        .innerJoin('encounters', 'encounters.id', 'monsters.encounter')
         .select(
             'monsters.id',
             'monsters.name',
             'monsters.health',
             'monsters.armor_class',
-            'monsters.status_effects',
-            'monsters.encounter'
+            'monsters.status_effects'
         )
         .where('monsters.encounter', encounterId)
     },

@@ -19,8 +19,8 @@ encountersRouter
             .catch(next)
     })
     .post(bodyParser, (req, res, next) => {
-        const { names, id } = req.body 
-        const newEncounter = { names, id }
+        const { names } = req.body 
+        const newEncounter = { names }
 
         if(!names) {
             return res.status(400).json({

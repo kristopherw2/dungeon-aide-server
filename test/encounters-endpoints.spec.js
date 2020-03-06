@@ -136,7 +136,6 @@ describe('POST /api/encounters', () => {
         .expect(res => {
             expect(res.body[0].names).to.eql(newEncounter.names)
             expect(res.body[0]).to.have.property('id')
-            console.log(res.body[0].id);
             expect(res.headers.location).to.eql(`/api/encounters/${res.body[0].id}`)
         })
         .then(postRes => {

@@ -112,7 +112,7 @@ monsterRouter
     })
 
     monsterRouter
-    .route('/:encounter_id/monster')
+    .route('/encounter/:encounter_id')
     .get((req, res, next) => {
       const knexInstance = req.app.get('db')
       MonsterService.getMonstersByEncounterId(knexInstance, req.params.encounter_id )
