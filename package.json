@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --require test/setup.js",
     "start": "node src/server.js",
-    "predploy": "npm audit",
+    "predeploy": "npm audit",
     "deploy": "git push heroku master",
     "dev": "nodemon src/server.js",
     "migrate": "postgrator --config postgrator-config.js",

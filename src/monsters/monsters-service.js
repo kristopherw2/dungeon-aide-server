@@ -1,11 +1,9 @@
 const MonstersService = {
     getAllMonsters(knex) {
-        console.log('get all monsters is being called')
         return knex.select('*').from('monsters')
     },
 
     createNewMonster(knex, newMonster) {
-        console.log('create new monster has been called')
         return knex
         .insert(newMonster)
         .into('monsters')
@@ -26,7 +24,6 @@ const MonstersService = {
     },
 
     getMonsterById(knex, id){
-        console.log('getMonstersById fired')
         return knex.from('monsters').select('*').where('id', id).first()
     },
 

@@ -39,43 +39,6 @@ encountersRouter
                     .json(encounter)
             })
             .catch(next)
-        
-        // if(!names) {
-        //     logger.error(`Name is required`);
-        //     return res
-        //       .status(400)
-        //       .send('Invalid Data');
-        // };
-        
-        // if(!users) {
-        //     logger.error(`user is required`);
-        //     return res
-        //     .status(404)
-        //     .send('Invalid Data')
-        // };
-        
-        // if(typeof users !== "number") {
-        //     logger.error(`user is not a number`)
-        //     return res
-        //     .status(400)
-        //     .send('user must be a number')
-        // };
-        
-        // const id = uuid();
-        
-        // const newEncounter = {
-        //     id,
-        //     names,
-        //     users
-        // };
-        
-        // encounters.push(newEncounter)
-        
-        // logger.info(`Encounter with id ${id} created`);
-        // res
-        //     .status(201)
-        //     .location(`http://localhost:8000/encounters/${id}`)
-        //     .json(newEncounter)
         });
 
 encountersRouter
