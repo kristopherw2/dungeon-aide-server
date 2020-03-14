@@ -35,7 +35,7 @@ afterEach(() => {
 
 after('disconnect from db', () => db.destroy());
 
-describe('Get /api/:encounter_id/monster', () => {
+describe('Get /api/monsters/encounter/:encounter_id', () => {
     beforeEach('insert encounters, monsters', () => {
                 return db
                 .into('encounters')
@@ -51,7 +51,7 @@ describe('Get /api/:encounter_id/monster', () => {
         const encounter_id = 2;
         const expectedMonsters = testMonsters.filter(item => item.encounter === encounter_id)
         return supertest(app)
-        .get(`/api/monsters/${encounter_id}/monster`)
+        .get(`/api/monsters/encounter/${encounter_id}`)
         .expect(200, expectedMonsters)
     })
 })

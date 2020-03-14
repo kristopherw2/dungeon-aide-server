@@ -1,26 +1,63 @@
-# Express Boilerplate!
+# Dungeon Aide
 
-This is a boilerplate project used for starting new projects!
+## Live App
+https://dungeon-aide-client-16jxz38q8.now.sh/
 
-## Set up
+## Documentation
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+**/api/encounters**
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+-   GET /api/encounters
+-   POST /api/encounters
 
-## Scripts
+**/api/monsters**
 
-Start the application `npm start`
+-   GET /api/monsters/encounter/:encounter_id
+-   POST /api/monsters
+-   DELETE /api/monsters/:monster_id
 
-Start nodemon for the application `npm run dev`
+## ScreenShots
 
-Run the tests `npm test`
+### LandingPage
 
-## Deploying
+![Landing Page](screenshots/LandingPage.PNG)
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+### Encounters List
+
+![Encounters List](screenshots/EncountersList.PNG)
+
+### Specific Encounters
+
+![Specific Encounters](screenshots/SpecificEncounters.PNG)
+
+### Encounter Creation
+
+![Encounter Creation](screenshots/EncounterCreation.PNG)
+
+### Monster Creation
+
+![Monster Creation](screenshots/MonsterCreation.PNG)
+
+## App Summary
+
+Dungeon Aide is an attempt to have community ideas for funny,
+serious, or outlandish encounters for others to enjoy. If you're
+DM forgot to plan for the session, as most DM's do, they can
+just visit Dungeon Aide and look through the encounters
+already built! Dungeon Aide is not meant to build an entire
+campaign but only assist in the structuring of one!
+
+## Built With
+
+-   React
+-   Node
+-   Express
+-   PostgreSQL
+
+## Road Map
+
+-   Implement User Accounts
+-   Users able to manipulate their encounters
+-   Links for sharing
+-   Saved Favorites
+-   Import pictures
