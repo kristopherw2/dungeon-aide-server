@@ -1,7 +1,7 @@
 # Dungeon Aide
 
 ## Live App
-https://dungeon-aide-client-16jxz38q8.now.sh/
+https://dungeon-aide-client.now.sh/
 
 ## Documentation
 
