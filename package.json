@@ -14,6 +14,9 @@
     "migrate:production": "env SSL=true DATABASE_URL=$(heroku config:get DATABASE_URL) npm run migrate"
   },
   "keywords": [],
+  "engines": {
+    "node": "16.13.0"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,8 +26,8 @@
     "helmet": "^3.21.1",
     "knex": "^0.20.3",
     "morgan": "^1.9.1",
-    "pg": "^7.14.0",
-    "postgrator-cli": "^3.3.0",
+    "pg": "^8.7.1",
+    "postgrator-cli": "^4.0.0",
     "uuid": "^3.3.3",
     "winston": "^3.2.1",
     "xss": "^1.0.6"
